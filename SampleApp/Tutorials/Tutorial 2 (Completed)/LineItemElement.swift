@@ -8,25 +8,45 @@ struct LineItemElement: ProxyElement {
     var price: Double
 
     var elementRepresentation: Element {
-        return Row { row in
+        return Row({
 
-            row.horizontalUnderflow = .spaceEvenly
+            Label(
+                text: title,
+                configure: {
+                    $0.font = style.titleFont
+                    $0.color = style.titleColor
+                })
 
-            var titleLabel = Label(text: title)
-            titleLabel.font = style.titleFont
-            titleLabel.color = style.titleColor
-            row.add(child: titleLabel)
+            Column({
+                Label(text: "one")
+                    .withGrowthPriority(0)
+                Label(text: "two")
+            })
 
-            let formatter = NumberFormatter()
-            formatter.numberStyle = .currency
-            let formattedPrice = formatter.string(from: NSNumber(value: price)) ?? ""
+            Label(
+                text: {
+                    let formatter = NumberFormatter()
+                    formatter.numberStyle = .currency
+                    return formatter.string(from: NSNumber(value: price)) ?? ""
+                }(),
+                configure: {
+                    $0.font = style.priceFont
+                    $0.color = style.priceColor
+                })
+                .withGrowthPriority(0)
+                .withShrinkPriority(0)
+                .constrainedBy(
+                    width: .absolute(140),
+                    height: .absolute(140)
+                )
 
-            var priceLabel = Label(text: formattedPrice)
-            priceLabel.font = style.priceFont
-            priceLabel.color = style.priceColor
-            row.add(child: priceLabel)
+            (price >= 10_00)
+                ? Label(text: "It's expensive!")
+                    .withShrinkPriority(0)
+                    .withGrowthPriority(0)
+                : nil
 
-        }
+        })
     }
 
 }
